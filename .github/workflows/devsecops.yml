@@ -61,4 +61,8 @@ jobs:
           exit-code: 1
           ignore-unfixed: true
           vuln-type: os,library
+<<<<<<< HEAD
           severity: CRITICAL,HIGH
+=======
+          severity: CRITICAL,HIGH
+>>>>>>> 431ba95 (Initial commit DevSecOps)
