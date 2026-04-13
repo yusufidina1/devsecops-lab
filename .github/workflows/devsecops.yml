@@ -1,91 +1,64 @@
 name: DevSecOps Pipeline
 
 on:
-
   push:
-
-     branches: [ "main" ]
+    branches: ["main"]
 
 permissions:
-
   contents: read
-
   security-events: write
-
   actions: read
 
 jobs:
-
   devsecops:
-
     runs-on: ubuntu-latest
 
-
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - uses: actions/checkout@v3
+      ############################################
+      # 1. SAST - CodeQL
+      ############################################
 
+      - name: Init CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: python
 
-    ############################################
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
 
-    # 1. Analyse SAST CodeQL
+      - name: Run CodeQL
+        uses: github/codeql-action/analyze@v3
 
-    ############################################
-    - name: Init CodeQL
-	  uses: github/codeql-action/init@v3
-		
-      with:
-		
-        languages: python
-		   
+      ############################################
+      # 2. Python Security - Bandit
+      ############################################
 
-	- name: Run CodeQL
+      - name: Install Bandit
+        run: pip install bandit
 
-      uses: github/codeql-action/analyze@v3
+      - name: Run Bandit
+        run: bandit -r . --severity-level high
 
+      ############################################
+      # 3. Build Docker Image
+      ############################################
 
-    ############################################
+      - name: Build Docker image
+        run: docker build -t devsecops-api .
 
-    # 2. Analyse sécurité Python avec Bandit
+      ############################################
+      # 4. Scan Docker Image with Trivy
+      ############################################
 
-    ############################################
-    - name: Install Bandit
-
-      run: pip install bandit
-
-    - name: Run Bandit
-
-      run: bandit -r api --severity-level high
-
-    ############################################
-
-    # 3. Build Docker
-
-    ############################################
-
-    - name: Build Docker image
-
-      run: docker build -t devsecops-api .
-
-    ############################################
-
-    # 4. Scan Docker avec Trivy
-
-    ############################################
-
-    - name: Trivy Scan
-
-    uses: aquasecurity/trivy-action@master
-
-      with:
-
-        scan-type: image
-
-        image-ref: devsecops-api
-
-
-        severity: CRITICAL
-
-        ignore-unfixed: true
-
-        exit-code: 1
+      - name: Trivy Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: devsecops-api
+          format: table
+          exit-code: 1
+          ignore-unfixed: true
+          vuln-type: os,library
+          severity: CRITICAL,HIGH
