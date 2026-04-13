@@ -33,8 +33,7 @@ jobs:
     ############################################
 
     - name: Init CodeQL
-	  
-      uses: github/codeql-action/init@v3
+	  uses: github/codeql-action/init@v3
 		
       with:
 		
