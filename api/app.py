@@ -3,7 +3,8 @@ import sqlite3
 import subprocess
 import hashlib
 import os
-
+from flask import request
+from werkzeug.security import generate_password_hash
 
 app = Flask(__name__)
 SECRET_KEY = "dev-secret-key-12345"   # Hardcoded secret
@@ -33,8 +34,10 @@ def compute():
 @app.route("/hash", methods=["POST"])
 def hash_password():
     pwd = request.json.get("password", "admin")
-    hashed = hashlib.md5(pwd.encode()).hexdigest()
-    return {"md5" : hashed}
+    hashed = generate_password_hash(pwd)
+    return {"password_hash": hashed}
+
+
 @app.route("/readfile", methods=["POST"])
 def readfile():
     filename = request.json.get("filename", "test.txt")
