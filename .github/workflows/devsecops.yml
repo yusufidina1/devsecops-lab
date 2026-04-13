@@ -31,7 +31,6 @@ jobs:
     # 1. Analyse SAST CodeQL
 
     ############################################
-
     - name: Init CodeQL
 	  uses: github/codeql-action/init@v3
 		
