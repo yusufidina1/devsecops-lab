@@ -33,9 +33,12 @@ jobs:
       ############################################
 
       - name: Init CodeQL
+	  
         uses: github/codeql-action/init@v3
+		
         with:
-           languages: python
+		
+          languages: python
 		   
 
 	  - name: Run CodeQL
