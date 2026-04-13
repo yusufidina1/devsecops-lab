@@ -38,7 +38,7 @@ jobs:
 
         with:
 
-          languages: python
+           languages: python
 
 	  - name: Run CodeQL
 
