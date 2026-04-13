@@ -3,7 +3,6 @@ import sqlite3
 import subprocess
 import hashlib
 import os
-from flask import request
 from werkzeug.security import generate_password_hash
 
 app = Flask(__name__)
@@ -21,11 +20,13 @@ def login():
         return {"status" : "success", "user": username}
     return {"status" : "error", "message" : "Invalid credentials"}
 @app.route("/ping", methods=["POST"])
-def ping():
-    host = request.json.get("host","")
-    cmd = f"ping -c 1 {host}"
-    output = subprocess.check_output(cmd, shell=True)
-    return {"output" : output.decode()}
+def  ping(host:  str) ->  str:
+    result  =  subprocess.check_output(
+        ["ping" ,  "-c",  "1" ,  host],
+        text=True
+    )
+    return result
+
 @app.route("/compute", methods=["POST"])
 def compute():
     expression = request.json.get("expression", "1+1")
